@@ -1,0 +1,8 @@
+.converted {
+    margin: auto;
+    width: 70%;
+    border: thin grey;
+    border-radius: 2%;
+    padding: 10px;
+    background-color: #F5F5F5;
+}
