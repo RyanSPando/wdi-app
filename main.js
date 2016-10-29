@@ -1,8 +1,8 @@
-$(document).ready(function() {
+$(document).ready(function() { //on ready iife
 
   //select input field and output area
 	var jsonInput = document.getElementById('jsonInput');
-	var htmlDisplayArea = document.getElementById('htmlDisplayArea');
+	var $htmlDisplayArea = $('#htmlDisplayArea');
 
   //listen for file input
 	jsonInput.addEventListener('change', function(e) {
@@ -14,33 +14,63 @@ $(document).ready(function() {
     //if file is json, read file
 		if (json.type.match(fileType))
     {
+      //instantiate FileReader object
 			var reader = new FileReader();
 
+      //when file is loaded do stuff
 			reader.onload = function(e) {
-        //display stuff from file
+        //parse to JSON
         const jsonObject = JSON.parse(reader.result);
-				htmlDisplayArea.innerText = convertJsonToHtml(jsonObject);
+        //Empty display areas
+        $htmlDisplayArea.empty();
+        //map top level of array of objects and pass them to the converter and then join them together
+        var toAppend = jsonObject.map(value => convertJsonToHtml(value)).join('');
+        //append to dom
+        $htmlDisplayArea.append(toAppend);
 			};
       //read text
 			reader.readAsText(json);
 		}
     else // If not .json display error
     {
-			htmlDisplayArea.innerText = "File not supported!";
+			$htmlDisplayArea.text("File not supported!");
 		}
   });
 });
 
+//takes JSON and converts it to HTML recursively
 function convertJsonToHtml(jsonObject) {
 
-  if (!Object.keys(jsonObject) && !Array.isArray(jsonObject)) {
-    return null;
+  //if the next level down is an object, wrap it in element defined by tag and pass it recursively
+  if (isObject(jsonObject.content))
+  {
+    return (
+      `<${jsonObject.tag}>
+      ${convertJsonToHtml(jsonObject.content)}
+      </${jsonObject.tag}>`
+    );
   }
-  if (Array.isArray(jsonObject)) {
-    jsonObject.forEach(value => convertJsonToHtml(value));
+  //if the next level down is an array, wrap it in element defined by tag and pass all elements of the array recursively
+  else if (Array.isArray(jsonObject.content))
+  {
+    return (
+      `<${jsonObject.tag}>
+      ${jsonObject.content.map(section => convertJsonToHtml(section)).join('')}
+      </${jsonObject.tag}>`
+    );
   }
+  //terminate recursion at end of JSON tree by returning content wrapped in element defined by tag.
   else
   {
-    console.log(Object.keys(jsonObject));
+    return (
+      `<${jsonObject.tag}>
+      ${jsonObject.content}
+      </${jsonObject.tag}>`
+    );
   }
+}
+
+//returns true if an object, false otherwise
+function isObject (item) {
+  return (typeof item === "object" && !Array.isArray(item) && item !== null);
 }
