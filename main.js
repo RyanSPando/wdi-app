@@ -1,4 +1,4 @@
-window.onload = function() {//onload iife
+$(document).ready(function() {
 
   //select input field and output area
 	var jsonInput = document.getElementById('jsonInput');
@@ -12,17 +12,35 @@ window.onload = function() {//onload iife
 		var fileType = /json.*/;
 
     //if file is json, read file
-		if (json.type.match(fileType)) {
+		if (json.type.match(fileType))
+    {
 			var reader = new FileReader();
 
 			reader.onload = function(e) {
         //display stuff from file
-				htmlDisplayArea.innerText = reader.result;
+        const jsonObject = JSON.parse(reader.result);
+				htmlDisplayArea.innerText = convertJsonToHtml(jsonObject);
 			};
-      //r
+      //read text
 			reader.readAsText(json);
-		} else {
+		}
+    else // If not .json display error
+    {
 			htmlDisplayArea.innerText = "File not supported!";
 		}
-	});
-};
+  });
+});
+
+function convertJsonToHtml(jsonObject) {
+
+  if (!Object.keys(jsonObject) && !Array.isArray(jsonObject)) {
+    return null;
+  }
+  if (Array.isArray(jsonObject)) {
+    jsonObject.forEach(value => convertJsonToHtml(value));
+  }
+  else
+  {
+    console.log(Object.keys(jsonObject));
+  }
+}
