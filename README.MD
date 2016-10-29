@@ -21,7 +21,7 @@ When parsing the JSON, notice that each object has the exact same structure whic
 Sample JSON
 
 The following files should all work with your website. Copy each code block into a separate file and then load it into the example website to see what might be rendered.
-
+```json
 [
   {
     "tag": "section",
@@ -112,3 +112,4 @@ The following files should all work with your website. Copy each code block into
     ]
   }
 ]
+```
